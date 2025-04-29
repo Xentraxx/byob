@@ -1,0 +1,12 @@
+services:
+  byob-server:
+    image: byob-server
+    build:
+      context: .
+      dockerfile: ./byob/Dockerfile
+
+  byobweb-gui:
+    image: byob-web-gui
+    build:
+      context: .
+      dockerfile: ./web-gui/Dockerfile
