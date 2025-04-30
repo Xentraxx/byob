@@ -19,6 +19,7 @@ import datetime
 import threading
 import subprocess
 import collections
+import colorama
 
 http_serv_mod = "SimpleHTTPServer"
 if sys.version_info[0] > 2:
@@ -38,9 +39,9 @@ except ImportError:
     sys.exit("Error: missing package 'colorama' is required")
 
 try:
-    raw_input          # Python 2
+    input              
 except NameError:
-    raw_input = input  # Python 3
+    raw_input = input
 
 # globals
 __threads = {}
@@ -351,7 +352,7 @@ class C2():
         if isinstance(info, str):
             try:
                 info = json.loads(info)
-            except: pass
+            except Exception: pass
         if isinstance(info, dict):
             max_key = int(max(map(len, [str(i1) for i1 in info.keys() if i1 if i1 != 'None'])) + 2) if int(max(map(len, [str(i1) for i1 in info.keys() if i1 if i1 != 'None'])) + 2) < 80 else 80
             max_val = int(max(map(len, [str(i2) for i2 in info.values() if i2 if i2 != 'None'])) + 2) if int(max(map(len, [str(i2) for i2 in info.values() if i2 if i2 != 'None'])) + 2) < 80 else 80
@@ -487,13 +488,13 @@ class C2():
         for proc in self.child_procs.values():
             try:
                 proc.kill()
-            except: pass
+            except Exception: pass
 
         # kill child processes (multiprocessing.Process)
         for child_proc in self.child_procs.values():
             try:
                 child_proc.terminate()
-            except: pass
+            except Exception: pass
         
         # kill clients or keep alive (whichever user specifies)
         if self._get_prompt('Quitting server - Keep clients alive? (y/n): ').startswith('y'):
@@ -622,20 +623,19 @@ class C2():
         """
         if args:
             arguments = self._get_arguments(args)
-            args, kwargs = arguments.args, arguments.kwargs
+            args, _ = arguments.args, arguments.kwargs
             if arguments.args:
                 target = args[0]
                 args = args[1:]
-                if target in ('debug','debugging'):
-                    if args:
-                        setting = args[0]
-                        if setting.lower() in ('0','off','false','disable'):
-                            globals()['debug'] = False
-                        elif setting.lower() in ('1','on','true','enable'):
-                            globals()['debug'] = True
-                        util.display("\n[+]" if globals()['debug'] else "\n[-]", color='green' if globals()['debug'] else 'red', style='normal', end=' ')
-                        util.display("Debug: {}\n".format("ON" if globals()['debug'] else "OFF"), color='white', style='bright')
-                        return
+                if target in ('debug','debugging') and args:
+                    setting = args[0]
+                    if setting.lower() in ('0','off','false','disable'):
+                        globals()['debug'] = False
+                    elif setting.lower() in ('1','on','true','enable'):
+                        globals()['debug'] = True
+                    util.display("\n[+]" if globals()['debug'] else "\n[-]", color='green' if globals()['debug'] else 'red', style='normal', end=' ')
+                    util.display("Debug: {}\n".format("ON" if globals()['debug'] else "OFF"), color='white', style='bright')
+                    return
                 for setting, option in arguments.kwargs.items():
                     option = option.upper()
                     if target == 'prompt':
